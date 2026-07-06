@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Music, BarChart3, Calendar, Target, Flag, LogOut, Bell, TrendingUp } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
 import OverviewCards from "@/components/launch-tracker/overview-cards";
 import TrendChart from "@/components/launch-tracker/trend-chart";
 import ContentCalendar from "@/components/launch-tracker/content-calendar";
@@ -15,23 +14,28 @@ import NotificationPanel from "@/components/launch-tracker/notification-panel";
 import { useNotifications } from "@/hooks/use-notifications";
 
 /* ═══════════════════════════════════════════
+   SIMPLE AUTH HELPERS (no NextAuth dependency)
+   ═══════════════════════════════════════════ */
+function setAuthCookie() {
+  document.cookie = "md-auth=1; path=/; max-age=2592000; SameSite=Lax";
+}
+function clearAuthCookie() {
+  document.cookie = "md-auth=; path=/; max-age=0";
+}
+function hasAuthCookie(): boolean {
+  return document.cookie.split(";").some((c) => c.trim().startsWith("md-auth=1"));
+}
+
+/* ═══════════════════════════════════════════
    LANDING PAGE
    ═══════════════════════════════════════════ */
 function LandingPage() {
   const [loading, setLoading] = useState(false);
 
-  const handleDemoLogin = async () => {
+  const handleDemoLogin = () => {
     setLoading(true);
-    try {
-      const resp = await fetch("/api/demo-login", { method: "POST" });
-      if (resp.ok) {
-        window.location.href = window.location.origin + "/";
-      } else {
-        setLoading(false);
-      }
-    } catch {
-      setLoading(false);
-    }
+    setAuthCookie();
+    window.location.href = "/";
   };
 
   return (
@@ -136,19 +140,19 @@ export default function Home() {
   const [launchDate, setLaunchDate] = useState("2025-08-04");
   const [editingDate, setEditingDate] = useState(false);
 
-  const { data: session, status } = useSession();
-
   // Notifications
   const { notifications, unreadCount, isOpen: notifOpen, setIsOpen: setNotifOpen, markAllRead, markRead, dismiss, panelRef } = useNotifications(
     data ? { content: data.content, kpis: data.kpis } : {}
   );
 
+  // Simple cookie-based auth check (no NextAuth dependency)
   useEffect(() => {
-    if (status !== "loading") {
-      if (session) setAuthenticated(true);
-      setChecking(false);
+    const isAuth = hasAuthCookie();
+    if (isAuth) {
+      setAuthenticated(true);
     }
-  }, [session, status]);
+    setChecking(false);
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem("md-launch-date");
@@ -159,6 +163,11 @@ export default function Home() {
     setLaunchDate(newDate);
     localStorage.setItem("md-launch-date", newDate);
     setEditingDate(false);
+  };
+
+  const handleLogout = () => {
+    clearAuthCookie();
+    window.location.href = "/";
   };
 
   const fetchData = useCallback(async () => {
@@ -229,7 +238,7 @@ export default function Home() {
               <div>
                 <h1 className="text-[17px] font-semibold text-white tracking-[-0.02em]">Mal Deseo</h1>
                 <p className="text-[12px] text-[#6e6e73] mt-[-1px]">
-                  {session?.user?.name || "Kevin Cano"}
+                  Kevin Cano
                 </p>
               </div>
             </div>
@@ -249,7 +258,7 @@ export default function Home() {
                 )}
               </button>
               <button
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={handleLogout}
                 className="w-9 h-9 flex items-center justify-center rounded-full text-[#48484a] hover:text-[#D6001C] hover:bg-[#D6001C]/[0.06] transition-colors duration-200"
               >
                 <LogOut className="h-[16px] w-[16px]" strokeWidth={1.5} />
