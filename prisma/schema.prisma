@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "sqlite"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model DailyMetric {
+  id          String   @id @default(cuid())
+  platform    String   // "tiktok" | "instagram"
+  date        String   // YYYY-MM-DD format
+  views       Int      @default(0)
+  likes       Int      @default(0)
+  comments    Int      @default(0)
+  shares      Int      @default(0)
+  saves       Int      @default(0)
+  profileViews Int     @default(0)
+  followers   Int      @default(0)
+  linkClicks  Int      @default(0)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContentPiece {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  platform    String   // "tiktok" | "instagram" | "ambas"
+  contentType String   // "teaser" | "snippet" | "lyric_video" | "behind_scenes" | "story" | "reel"
+  status      String   @default("pendiente") // "pendiente" | "en_progreso" | "publicado" | "cancelado"
+  scheduledDate String? // YYYY-MM-DD
+  publishDate DateTime?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model KPI {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  platform    String?  // null = global
+  target      Float
+  current     Float    @default(0)
+  unit        String   @default("") // "%", "views", "seguidores", etc.
+  category    String   @default("general") // "alcance" | "engagement" | "conversion" | "streaming"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LaunchEvent {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  eventType   String   // "prelanzamiento" | "lanzamiento" | "postlanzamiento"
+  eventDate   String?  // YYYY-MM-DD
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

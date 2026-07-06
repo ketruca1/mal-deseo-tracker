@@ -1,0 +1,18 @@
+{
+  "name": "Mal Deseo — Launch Tracker",
+  "short_name": "Mal Deseo",
+  "description": "Seguimiento del lanzamiento de Mal Deseo by Kevin Cano",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
