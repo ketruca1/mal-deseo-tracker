@@ -1,21 +1,11 @@
 import { db } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const { searchParams } = req.nextUrl;
-    const status = searchParams.get('status');
-    const platform = searchParams.get('platform');
-
-    const where: Record<string, unknown> = {};
-    if (status) where.status = status;
-    if (platform) where.platform = platform;
-
     const content = await db.contentPiece.findMany({
-      where,
       orderBy: { scheduledDate: 'asc' },
     });
-
     return NextResponse.json(content);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch content' }, { status: 500 });
@@ -48,7 +38,6 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { id, ...data } = body;
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
-
     const piece = await db.contentPiece.update({
       where: { id },
       data: {
@@ -64,10 +53,9 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const { searchParams } = req.nextUrl;
+    const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
-
     await db.contentPiece.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
