@@ -1,20 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import {
   CheckCircle2, Circle, Clock, PlayCircle, Plus, Film, Tv, Music, Camera,
-  ChevronDown, ChevronUp, Lightbulb, Target,
+  ChevronDown, ChevronUp, Lightbulb, Target, X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -41,69 +31,69 @@ const contentTypeLabel: Record<string, string> = {
 
 const strategyAdvice: Record<string, { objective: string; tips: string[]; bestTime: string; hashtagStrategy: string }> = {
   teaser: {
-    objective: "Generar curiosidad y anticipación sin revelar la canción completa. Crea un gancho emocional que obligue al espectador a querer escuchar más.",
+    objective: "Generar curiosidad y anticipacion sin revelar la cancion completa. Crea un gancho emocional que obligue al espectador a querer escuchar mas.",
     tips: [
-      "Usa los primeros 3-5 segundos del coro o el hook más pegadizo",
-      "Publica en horarios de alta actividad (7-9pm) para maximizar alcance orgánico",
-      "NO muestres la cara del artista aún — genera misterio y especulación",
-      "Usa texto tipo '¿Listo para esto?' para crear engagement inmediato",
+      "Usa los primeros 3-5 segundos del coro o el hook mas pegadizo",
+      "Publica en horarios de alta actividad (7-9pm) para maximizar alcance organico",
+      "NO muestres la cara del artista aun — genera misterio y especulacion",
+      "Usa texto tipo Listo para esto? para crear engagement inmediato",
     ],
-    bestTime: "Mar a Jue, 7:00–9:00 PM",
-    hashtagStrategy: "#bachata2025 #nuevamúsica #maldeseo #kevincano #trending #fyp",
+    bestTime: "Mar a Jue, 7:00-9:00 PM",
+    hashtagStrategy: "#bachata2025 #nuevamusic #maldeseo #kevincano #trending #fyp",
   },
   snippet: {
     objective: "Mostrar un fragmento adictivo de 10-15 segundos que se quede en la cabeza del oyente y funcione como earworm.",
     tips: [
-      "Elige el momento más memorable musicalmente — un run vocal o un drop",
-      "Usa la técnica 'split screen' mostrando la reacción de alguien al escucharlo",
-      "Acompaña con CTA claro: 'Guarda este sonido' o '¿Quieres más? Sígueme'",
+      "Elige el momento mas memorable musicalmente — un run vocal o un drop",
+      "Usa la tecnica split screen mostrando la reaccion de alguien al escucharlo",
+      "Acompana con CTA claro: Guarda este sonido o Quieres mas? Siguerme",
       "Considera crear un sonido original de TikTok para que otros lo usen",
     ],
-    bestTime: "Vie y Sáb (fin de semana = más descubrimiento)",
-    hashtagStrategy: "#soundoriginal #snippet #maldeseo #kevincano #nuevasonido",
+    bestTime: "Vie y Sab (fin de semana = mas descubrimiento)",
+    hashtagStrategy: "#soundoriginal #snippet #maldeseo #kevincano #nuevsonido",
   },
   lyric_video: {
-    objective: "Conectar emocionalmente con la letra. Las letras bien hechas en video generan shares y saves significativamente más.",
+    objective: "Conectar emocionalmente con la letra. Las letras bien hechas en video generan shares y saves significativamente mas.",
     tips: [
       "Sincroniza las letras con momentos visuales potentes",
-      "Usa tipografía cinematográfica: grande, centrada, con timing preciso",
-      "Incluye momentos de silencio visual dramático en partes clave",
-      "Agrega subtítulos en inglés para audiencia internacional",
+      "Usa tipografia cinematografica: grande, centrada, con timing preciso",
+      "Incluye momentos de silencio visual dramatico en partes clave",
+      "Agrega subtitulos en ingles para audiencia internacional",
     ],
-    bestTime: "Dom a Mié (días de consumo reflexivo)",
+    bestTime: "Dom a Mie (dias de consumo reflexivo)",
     hashtagStrategy: "#lyricvideo #letras #maldeseo #bachatalyrics #kevincano",
   },
   behind_scenes: {
-    objective: "Humanizar al artista. El contenido BTS genera 3x más engagement que contenido producido por autenticidad.",
+    objective: "Humanizar al artista. El contenido BTS genera 3x mas engagement que contenido producido por autenticidad.",
     tips: [
       "Muestra MOMENTOS REALES: ensayos, errores, risas, discusiones creativas",
-      "Habla directamente a cámara como si fuera un vlog corto",
-      "Incluye clips del proceso de grabación, mezcla o masterización",
+      "Habla directamente a camara como si fuera un vlog corto",
+      "Incluye clips del proceso de grabacion, mezcla o masterizacion",
       "La vulnerabilidad genera lealtad — muestra el proceso real",
     ],
-    bestTime: "Lun y Mié (contenido personal funciona bien entre semana)",
+    bestTime: "Lun y Mie (contenido personal funciona bien entre semana)",
     hashtagStrategy: "#bts #detrascenarios #maldeseo #kevincano #enestudio",
   },
   story: {
     objective: "Mantener presencia diaria sin saturar. Stories son ideales para micro-contenido y updates que mantienen engagement alto.",
     tips: [
-      "Usa stickers interactivos: encuestas '¿Qué prefieres?', sliders",
-      "Cuenta un dato interesante del día en cada story",
-      "Haz 'countdown stories' cada vez que falten menos días",
-      "Pregunta a tu audiencia para generar conversación",
+      "Usa stickers interactivos: encuestas Que prefieres?, sliders",
+      "Cuenta un dato interesante del dia en cada story",
+      "Haz countdown stories cada vez que falten menos dias",
+      "Pregunta a tu audiencia para generar conversacion",
     ],
-    bestTime: "12PM, 7PM y 10PM (2-3 por día)",
+    bestTime: "12PM, 7PM y 10PM (2-3 por dia)",
     hashtagStrategy: "No uses hashtags en stories",
   },
   reel: {
     objective: "Maximizar alcance y descubrimiento. Los Reels tienen el mayor potencial viral en Instagram para contenido musical.",
     tips: [
-      "Usa audio trending + tu canción en el video",
+      "Usa audio trending + tu cancion en el video",
       "Los primeros 0.5 segundos DEFINEN si alguien se detiene a ver",
-      "Incluye subtítulos grandes y legibles",
+      "Incluye subtitulos grandes y legibles",
       "Crea variaciones: mismo concepto en 3 versiones diferentes",
     ],
-    bestTime: "Sáb 8-10PM (máximo consumo de Reels)",
+    bestTime: "Sab 8-10PM (maximo consumo de Reels)",
     hashtagStrategy: "#reels #bachata #maldeseo #kevincano #viral #trending",
   },
 };
@@ -118,7 +108,7 @@ function getWeekLabel(dateStr: string): string {
 export default function ContentCalendar() {
   const [content, setContent] = useState<ContentPiece[]>([]);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [newItem, setNewItem] = useState({ title: "", description: "", platform: "ambas", contentType: "reel", scheduledDate: "", notes: "" });
 
@@ -134,14 +124,14 @@ export default function ContentCalendar() {
   };
 
   const handleAdd = async () => {
-    if (!newItem.title || !newItem.scheduledDate) { toast.error("Título y fecha requeridos"); return; }
+    if (!newItem.title || !newItem.scheduledDate) { toast.error("Titulo y fecha requeridos"); return; }
     try {
       const r = await fetch("/api/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(newItem) });
       if (r.ok) {
         const created = await r.json();
         setContent((p) => [...p, created].sort((a, b) => (a.scheduledDate || "").localeCompare(b.scheduledDate || "")));
         setNewItem({ title: "", description: "", platform: "ambas", contentType: "reel", scheduledDate: "", notes: "" });
-        setOpen(false); toast.success("Contenido agregado");
+        setShowAdd(false); toast.success("Contenido agregado");
       }
     } catch { toast.error("Error al agregar"); }
   };
@@ -171,65 +161,65 @@ export default function ContentCalendar() {
         <p className="text-[13px] font-semibold text-[#6e6e73] uppercase tracking-[0.06em]">
           Calendario de Contenido
         </p>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <button
-              className="h-8 px-3 rounded-[10px] text-[13px] font-medium text-white tap-feedback flex items-center gap-1.5"
-              style={{ background: "#D6001C" }}
-            >
-              <Plus className="h-[14px] w-[14px]" strokeWidth={2} />
-              Agregar
-            </button>
-          </DialogTrigger>
-          <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md bg-[#1c1c1e]/95 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-5">
-            <DialogHeader><DialogTitle className="text-[15px] text-white font-semibold tracking-[-0.01em]">Nueva Pieza de Contenido</DialogTitle></DialogHeader>
-            <div className="space-y-4 mt-3">
-              <div>
-                <Label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Título *</Label>
-                <Input value={newItem.title} onChange={(e) => setNewItem((p) => ({ ...p, title: e.target.value }))} placeholder="Ej: Teaser #5"
-                  className="mt-1.5 h-10 text-[14px] bg-white/[0.04] border-white/[0.06] text-white rounded-[12px]" />
-              </div>
-              <div>
-                <Label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Descripción</Label>
-                <Textarea value={newItem.description} onChange={(e) => setNewItem((p) => ({ ...p, description: e.target.value }))} placeholder="Detalles..."
-                  className="mt-1.5 text-[14px] min-h-[56px] bg-white/[0.04] border-white/[0.06] text-white rounded-[12px]" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Plataforma</Label>
-                  <Select value={newItem.platform} onValueChange={(v) => setNewItem((p) => ({ ...p, platform: v }))}>
-                    <SelectTrigger className="mt-1.5 h-10 text-[14px] bg-white/[0.04] border-white/[0.06] text-white rounded-[12px]"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-[#1c1c1e]/95 backdrop-blur-xl border-white/[0.06] rounded-[14px]">
-                      <SelectItem value="tiktok">TikTok</SelectItem><SelectItem value="instagram">Instagram</SelectItem><SelectItem value="ambas">Ambas</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Tipo</Label>
-                  <Select value={newItem.contentType} onValueChange={(v) => setNewItem((p) => ({ ...p, contentType: v }))}>
-                    <SelectTrigger className="mt-1.5 h-10 text-[14px] bg-white/[0.04] border-white/[0.06] text-white rounded-[12px]"><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-[#1c1c1e]/95 backdrop-blur-xl border-white/[0.06] rounded-[14px]">
-                      {Object.entries(contentTypeLabel).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div>
-                <Label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Fecha *</Label>
-                <Input type="date" value={newItem.scheduledDate} onChange={(e) => setNewItem((p) => ({ ...p, scheduledDate: e.target.value }))}
-                  className="mt-1.5 h-10 text-[14px] bg-white/[0.04] border-white/[0.06] text-white rounded-[12px]" />
-              </div>
-              <button
-                onClick={handleAdd}
-                className="w-full h-10 text-[14px] font-semibold rounded-[12px] text-white tap-feedback"
-                style={{ background: "#D6001C" }}
-              >
-                Crear Pieza de Contenido
-              </button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <button
+          onClick={() => setShowAdd(!showAdd)}
+          className="h-8 px-3 rounded-[10px] text-[13px] font-medium text-white tap-feedback flex items-center gap-1.5"
+          style={{ background: "#D6001C" }}
+        >
+          <Plus className="h-[14px] w-[14px]" strokeWidth={2} />
+          Agregar
+        </button>
       </div>
+
+      {/* Add Form (inline, no Dialog) */}
+      {showAdd && (
+        <div className="glass p-4 space-y-3 rounded-2xl">
+          <div className="flex items-center justify-between">
+            <p className="text-[14px] font-semibold text-white">Nueva Pieza de Contenido</p>
+            <button onClick={() => setShowAdd(false)} className="text-[#6e6e73] hover:text-white p-1"><X className="h-4 w-4" /></button>
+          </div>
+          <div>
+            <label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Titulo *</label>
+            <input value={newItem.title} onChange={(e) => setNewItem((p) => ({ ...p, title: e.target.value }))} placeholder="Ej: Teaser #5"
+              className="mt-1.5 w-full h-10 px-3 text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] outline-none focus:border-[#D6001C]/40" />
+          </div>
+          <div>
+            <label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Descripcion</label>
+            <textarea value={newItem.description} onChange={(e) => setNewItem((p) => ({ ...p, description: e.target.value }))} placeholder="Detalles..."
+              className="mt-1.5 w-full text-[14px] min-h-[56px] p-3 bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] outline-none focus:border-[#D6001C]/40 resize-none" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Plataforma</label>
+              <select value={newItem.platform} onChange={(e) => setNewItem((p) => ({ ...p, platform: e.target.value }))}
+                className="mt-1.5 w-full h-10 px-3 text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] outline-none appearance-none">
+                <option value="tiktok" style={{background:'#1c1c1e'}}>TikTok</option>
+                <option value="instagram" style={{background:'#1c1c1e'}}>Instagram</option>
+                <option value="ambas" style={{background:'#1c1c1e'}}>Ambas</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Tipo</label>
+              <select value={newItem.contentType} onChange={(e) => setNewItem((p) => ({ ...p, contentType: e.target.value }))}
+                className="mt-1.5 w-full h-10 px-3 text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] outline-none appearance-none">
+                {Object.entries(contentTypeLabel).map(([k, v]) => <option key={k} value={k} style={{background:'#1c1c1e'}}>{v}</option>)}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Fecha *</label>
+            <input type="date" value={newItem.scheduledDate} onChange={(e) => setNewItem((p) => ({ ...p, scheduledDate: e.target.value }))}
+              className="mt-1.5 w-full h-10 px-3 text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] outline-none focus:border-[#D6001C]/40" />
+          </div>
+          <button
+            onClick={handleAdd}
+            className="w-full h-10 text-[14px] font-semibold rounded-[12px] text-white tap-feedback"
+            style={{ background: "#D6001C" }}
+          >
+            Crear Pieza de Contenido
+          </button>
+        </div>
+      )}
 
       {/* Progress */}
       <div className="glass p-3">
@@ -326,7 +316,7 @@ export default function ContentCalendar() {
                             <ul className="space-y-1.5">
                               {advice.tips.map((tip, i) => (
                                 <li key={i} className="text-[12px] text-[#8e8e93] leading-relaxed flex gap-2">
-                                  <span className="text-[#D6001C] mt-[3px] shrink-0 text-[8px]">●</span>
+                                  <span className="text-[#D6001C] mt-[3px] shrink-0 text-[8px]">&#9679;</span>
                                   <span>{tip}</span>
                                 </li>
                               ))}

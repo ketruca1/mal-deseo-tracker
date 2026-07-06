@@ -1,22 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
-} from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { recordMetricStreak } from "@/hooks/use-notifications";
 
 export default function AddMetricForm({ onAdded }: { onAdded: () => void }) {
-  const [open, setOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     platform: "tiktok", date: new Date().toISOString().slice(0, 10),
     views: "", likes: "", comments: "", shares: "", saves: "",
@@ -31,57 +21,68 @@ export default function AddMetricForm({ onAdded }: { onAdded: () => void }) {
       const r = await fetch("/api/metrics", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       if (r.ok) {
         recordMetricStreak();
-        toast.success("Métrica guardada");
+        toast.success("Metrica guardada");
         setForm({ platform:"tiktok", date: new Date().toISOString().slice(0,10), views:"", likes:"", comments:"", shares:"", saves:"", profileViews:"", followers:"", linkClicks:"", notes:"" });
-        setOpen(false); onAdded();
+        setShowForm(false); onAdded();
       } else toast.error("Error al guardar");
-    } catch { toast.error("Error de conexión"); }
+    } catch { toast.error("Error de conexion"); }
   };
 
-  const field = (label: string, key: string, type = "text", placeholder = "") => (
+  const numField = (label: string, key: string, placeholder = "") => (
     <div>
-      <Label className="text-[10px] text-gray-500 uppercase tracking-wider">{label}</Label>
-      <Input type={type} placeholder={placeholder} value={form[key as keyof typeof form]} onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}
-        className="mt-1 h-9 text-sm bg-white/4 border-white/8 text-white focus:ring-[#dc2626]/50 rounded-xl" />
+      <label className="text-[10px] text-gray-500 uppercase tracking-wider">{label}</label>
+      <input type="number" placeholder={placeholder} value={form[key as keyof typeof form]} onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}
+        className="mt-1 w-full h-9 px-3 text-sm bg-white/[0.04] border border-white/[0.08] text-white rounded-xl outline-none focus:border-[#D6001C]/40" />
     </div>
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="w-full h-9 gap-1.5 text-[11px] rounded-xl bg-gradient-to-r from-[#991b1b] to-[#dc2626] hover:from-[#b91c1c] hover:to-[#ef4444] text-white border-0 shadow-md shadow-red-500/10">
-          <Plus className="h-3.5 w-3.5" /> Agregar Métrica del Día
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[85vh] overflow-y-auto bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/8 rounded-3xl">
-        <DialogHeader><DialogTitle className="text-sm text-white">Nueva Métrica</DialogTitle></DialogHeader>
-        <div className="space-y-3 mt-2">
+    <div>
+      <button
+        onClick={() => setShowForm(!showForm)}
+        className="w-full h-9 gap-1.5 text-[11px] rounded-xl text-white border-0 shadow-md shadow-red-500/10 flex items-center justify-center"
+        style={{ background: "linear-gradient(to right, #991b1b, #dc2626)" }}
+      >
+        <Plus className="h-3.5 w-3.5" /> Agregar Metrica del Dia
+      </button>
+
+      {showForm && (
+        <div className="mt-3 p-4 glass rounded-2xl space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-[14px] font-semibold text-white">Nueva Metrica</p>
+            <button onClick={() => setShowForm(false)} className="text-[#6e6e73] hover:text-white p-1"><X className="h-4 w-4" /></button>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-[10px] text-gray-500 uppercase tracking-wider">Plataforma</Label>
-              <Select value={form.platform} onValueChange={(v) => setForm((p) => ({ ...p, platform: v }))}>
-                <SelectTrigger className="mt-1 h-9 text-sm bg-white/4 border-white/8 text-white rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent className="bg-[#0a0a0a]/95 backdrop-blur-xl border-white/8 rounded-2xl">
-                  <SelectItem value="tiktok">TikTok</SelectItem><SelectItem value="instagram">Instagram</SelectItem>
-                </SelectContent>
-              </Select>
+              <label className="text-[10px] text-gray-500 uppercase tracking-wider">Plataforma</label>
+              <select value={form.platform} onChange={(e) => setForm((p) => ({ ...p, platform: e.target.value }))}
+                className="mt-1 w-full h-9 px-3 text-sm bg-white/[0.04] border border-white/[0.08] text-white rounded-xl outline-none appearance-none">
+                <option value="tiktok" style={{background:'#1c1c1e'}}>TikTok</option>
+                <option value="instagram" style={{background:'#1c1c1e'}}>Instagram</option>
+              </select>
             </div>
-            {field("Fecha", "date", "date")}
+            <div>
+              <label className="text-[10px] text-gray-500 uppercase tracking-wider">Fecha</label>
+              <input type="date" value={form.date} onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))}
+                className="mt-1 w-full h-9 px-3 text-sm bg-white/[0.04] border border-white/[0.08] text-white rounded-xl outline-none focus:border-[#D6001C]/40" />
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">{field("Views", "views", "number")}{field("Likes", "likes", "number")}</div>
-          <div className="grid grid-cols-2 gap-3">{field("Comments", "comments", "number")}{field("Shares", "shares", "number")}</div>
-          <div className="grid grid-cols-2 gap-3">{field("Saves (IG)", "saves", "number")}{field("Visitas perfil", "profileViews", "number")}</div>
-          <div className="grid grid-cols-2 gap-3">{field("Seguidores", "followers", "number")}{field("Clics enlace", "linkClicks", "number")}</div>
+          <div className="grid grid-cols-2 gap-3">{numField("Views", "views")}{numField("Likes", "likes")}</div>
+          <div className="grid grid-cols-2 gap-3">{numField("Comments", "comments")}{numField("Shares", "shares")}</div>
+          <div className="grid grid-cols-2 gap-3">{numField("Saves (IG)", "saves")}{numField("Visitas perfil", "profileViews")}</div>
+          <div className="grid grid-cols-2 gap-3">{numField("Seguidores", "followers")}{numField("Clics enlace", "linkClicks")}</div>
           <div>
-            <Label className="text-[10px] text-gray-500 uppercase tracking-wider">Notas</Label>
-            <Textarea placeholder="Observaciones..." value={form.notes} onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
-              className="mt-1 text-sm min-h-[50px] bg-white/4 border-white/8 text-white focus:ring-[#dc2626]/50 rounded-xl" />
+            <label className="text-[10px] text-gray-500 uppercase tracking-wider">Notas</label>
+            <textarea placeholder="Observaciones..." value={form.notes} onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
+              className="mt-1 w-full text-sm min-h-[50px] p-3 bg-white/[0.04] border border-white/[0.08] text-white rounded-xl outline-none focus:border-[#D6001C]/40 resize-none" />
           </div>
-          <Button onClick={handleSubmit} className="w-full h-9 text-sm rounded-xl bg-gradient-to-r from-[#991b1b] to-[#dc2626] hover:from-[#b91c1c] hover:to-[#ef4444] text-white border-0 shadow-md shadow-red-500/10">
-            Guardar Métrica
-          </Button>
+          <button onClick={handleSubmit}
+            className="w-full h-9 text-sm rounded-xl text-white border-0 shadow-md shadow-red-500/10"
+            style={{ background: "linear-gradient(to right, #991b1b, #dc2626)" }}>
+            Guardar Metrica
+          </button>
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+    </div>
   );
 }
