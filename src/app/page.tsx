@@ -14,79 +14,65 @@ import NotificationPanel from "@/components/launch-tracker/notification-panel";
 import { useNotifications } from "@/hooks/use-notifications";
 
 /* ═══════════════════════════════════════════
-   SIMPLE AUTH HELPERS (no NextAuth dependency)
-   ═══════════════════════════════════════════ */
-function setAuthCookie() {
-  document.cookie = "md-auth=1; path=/; max-age=2592000; SameSite=Lax";
-}
-function clearAuthCookie() {
-  document.cookie = "md-auth=; path=/; max-age=0";
-}
-function hasAuthCookie(): boolean {
-  return document.cookie.split(";").some((c) => c.trim().startsWith("md-auth=1"));
-}
-
-/* ═══════════════════════════════════════════
    LANDING PAGE
    ═══════════════════════════════════════════ */
 function LandingPage() {
   const [loading, setLoading] = useState(false);
 
-  const handleDemoLogin = () => {
+  const handleDemoLogin = async () => {
     setLoading(true);
-    setAuthCookie();
-    window.location.href = "/";
+    try {
+      const resp = await fetch("/api/demo-login", { method: "POST" });
+      if (resp.ok) {
+        window.location.href = window.location.origin + "/";
+      } else {
+        setLoading(false);
+      }
+    } catch {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="app-bg min-h-screen flex flex-col items-center justify-center px-8 relative overflow-hidden">
       <div className="landing-ring landing-ring-1" />
       <div className="landing-ring landing-ring-2" />
+      <div className="landing-ring landing-ring-3" />
       <div className="landing-glow" />
 
       <div className="relative z-10 text-center">
         <div className="landing-fade-in inline-block">
           <div
-            className="w-20 h-20 mx-auto rounded-[22px] flex items-center justify-center inner-glow-accent"
+            className="mx-auto rounded-[26px] flex items-center justify-center"
             style={{
-              background: "rgba(214, 0, 28, 0.12)",
-              border: "0.5px solid rgba(214, 0, 28, 0.18)",
-              boxShadow:
-                "0 0 60px rgba(214, 0, 28, 0.1), 0 0 0 0.5px rgba(255,255,255,0.04) inset, 0 0 0 1px rgba(214, 0, 28, 0.08)",
+              width: "88px", height: "88px",
+              background: "linear-gradient(135deg, rgba(214,0,28,0.15) 0%, rgba(255,59,79,0.06) 100%)",
+              border: "0.5px solid rgba(214,0,28,0.15)",
+              boxShadow: "0 0 60px rgba(214,0,28,0.08), 0 0 0 0.5px rgba(255,255,255,0.04) inset",
             }}
           >
-            <Music className="h-9 w-9 text-[#D6001C]" strokeWidth={1.5} />
+            <Music className="h-10 w-10 text-[#D6001C]" strokeWidth={1.5} />
           </div>
         </div>
 
         <h1
-          className="text-[52px] font-bold text-white mt-8 landing-fade-in-delay-1 text-display"
-          style={{
-            letterSpacing: "-0.045em",
-            textShadow: "0 0 80px rgba(214, 0, 28, 0.15), 0 0 40px rgba(214, 0, 28, 0.06)",
-          }}
+          className="text-[48px] font-bold tracking-tight text-white mt-10 landing-fade-in-delay-1 text-glow"
+          style={{ letterSpacing: "-0.04em" }}
         >
           MAL DESEO
         </h1>
-        <p
-          className="text-[15px] mt-2 landing-fade-in-delay-1 font-normal tracking-[-0.01em]"
-          style={{ color: "rgba(142, 142, 147, 0.85)" }}
-        >
+        <p className="text-[#6e6e73] text-[15px] mt-2 landing-fade-in-delay-1 font-normal">
           Kevin Cano — Bachata
         </p>
-        <p className="text-[11px] mt-1.5 tracking-[0.2em] uppercase landing-fade-in-delay-2 font-medium text-[#48484a]">
+        <p className="text-[#48484a] text-[11px] mt-1.5 tracking-[0.25em] uppercase landing-fade-in-delay-2 font-medium">
           Launch Tracker
         </p>
 
-        <div className="mt-12 landing-fade-in-delay-3">
+        <div className="mt-14 landing-fade-in-delay-3">
           <button
             onClick={handleDemoLogin}
             disabled={loading}
-            className="btn-premium btn-premium-primary tap-feedback w-[260px] h-[50px] rounded-[14px] text-[15px] font-semibold tracking-[-0.01em] text-white"
-            style={{
-              boxShadow:
-                "0 0 0 0.5px rgba(214, 0, 28, 0.3) inset, 0 2px 20px rgba(214, 0, 28, 0.35), 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 60px rgba(214, 0, 28, 0.08)",
-            }}
+            className="tap-feedback btn-primary w-[260px] h-[52px] text-[15px] disabled:opacity-40"
           >
             {loading ? (
               <div className="w-4 h-4 border-[1.5px] border-white/30 border-t-white rounded-full animate-spin mx-auto" />
@@ -148,24 +134,25 @@ export default function Home() {
   const [checking, setChecking] = useState(true);
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [contentPieces, setContentPieces] = useState<ContentPiece[]>([]);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [launchDate, setLaunchDate] = useState("2025-08-04");
   const [editingDate, setEditingDate] = useState(false);
-  const [contentPieces, setContentPieces] = useState<ContentPiece[]>([]);
 
-  // Notifications
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const r = await fetch("/api/demo-login", { method: "GET" });
+        if (r.ok) setAuthenticated(true);
+      } catch {}
+      setChecking(false);
+    };
+    check();
+  }, []);
+
   const { notifications, unreadCount, isOpen: notifOpen, setIsOpen: setNotifOpen, markAllRead, markRead, dismiss, panelRef } = useNotifications(
     data ? { content: data.content, kpis: data.kpis } : {}
   );
-
-  // Simple cookie-based auth check (no NextAuth dependency)
-  useEffect(() => {
-    const isAuth = hasAuthCookie();
-    if (isAuth) {
-      setAuthenticated(true);
-    }
-    setChecking(false);
-  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem("md-launch-date");
@@ -178,11 +165,6 @@ export default function Home() {
     setEditingDate(false);
   };
 
-  const handleLogout = () => {
-    clearAuthCookie();
-    window.location.href = "/";
-  };
-
   const fetchData = useCallback(async () => {
     try {
       const [dashRes, contentRes] = await Promise.all([
@@ -191,10 +173,10 @@ export default function Home() {
       ]);
       if (dashRes.ok) setData(await dashRes.json());
       if (contentRes.ok) {
-        const contentData = await contentRes.json();
-        if (Array.isArray(contentData)) setContentPieces(contentData);
+        const cd = await contentRes.json();
+        setContentPieces(Array.isArray(cd) ? cd : []);
       }
-    } catch (e) { console.error("Failed to fetch data", e); }
+    } catch (e) { console.error("Failed to fetch dashboard", e); }
     finally { setLoading(false); }
   }, []);
 
@@ -205,7 +187,11 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  /* ─── Loading ─── */
+  const handleSignOut = () => {
+    document.cookie = "md-auth=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+    window.location.href = "/";
+  };
+
   if (checking) {
     return (
       <div className="app-bg min-h-screen flex items-center justify-center">
@@ -216,29 +202,18 @@ export default function Home() {
 
   if (!authenticated) return <LandingPage />;
 
-  /* ─── Skeleton (Premium Shimmer) ─── */
   if (loading || !data) {
     return (
       <div className="app-bg min-h-screen pb-28">
         <div className="pt-safe" />
         <div className="px-5 pt-14 pb-6">
-          <div className="shimmer inline-block rounded-lg">
-            <Skeleton className="h-5 w-32 rounded-lg bg-white/[0.04]" />
-          </div>
-          <div className="shimmer inline-block rounded-lg mt-2">
-            <Skeleton className="h-3 w-20 rounded-lg bg-white/[0.04]" />
-          </div>
+          <Skeleton className="h-5 w-32 rounded-lg bg-white/[0.03]" />
+          <Skeleton className="h-3 w-20 rounded-lg bg-white/[0.03] mt-2" />
         </div>
         <div className="px-5 space-y-3">
-          <div className="shimmer rounded-2xl">
-            <Skeleton className="h-24 w-full rounded-2xl bg-white/[0.03]" />
-          </div>
-          <div className="shimmer rounded-2xl">
-            <Skeleton className="h-32 w-full rounded-2xl bg-white/[0.03]" />
-          </div>
-          <div className="shimmer rounded-2xl">
-            <Skeleton className="h-48 w-full rounded-2xl bg-white/[0.03]" />
-          </div>
+          <Skeleton className="h-24 w-full rounded-[20px] bg-white/[0.02]" />
+          <Skeleton className="h-32 w-full rounded-[20px] bg-white/[0.02]" />
+          <Skeleton className="h-48 w-full rounded-[20px] bg-white/[0.02]" />
         </div>
       </div>
     );
@@ -251,64 +226,42 @@ export default function Home() {
       <div className="pt-safe" />
 
       {/* ─── Header ─── */}
-      <header className="glass-header px-5 pb-4 pt-safe relative z-10">
+      <header className="glass-header px-5 pb-5 pt-safe relative z-10">
         <div className="max-w-md mx-auto">
-          {/* Top row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {/* Logo icon — rotating gradient border + inner glow */}
-              <div className="relative">
-                <div
-                  className="absolute -inset-[2px] rounded-[14px] opacity-60"
-                  style={{
-                    background: "conic-gradient(from 0deg, rgba(214,0,28,0.2), rgba(214,0,28,0.02), rgba(214,0,28,0.15), rgba(214,0,28,0.02), rgba(214,0,28,0.2))",
-                    animation: "spin-slow 8s linear infinite",
-                    filter: "blur(1px)",
-                  }}
-                />
-                <div
-                  className="relative w-10 h-10 rounded-[12px] flex items-center justify-center inner-glow-accent"
-                  style={{
-                    background: "rgba(214, 0, 28, 0.1)",
-                    border: "0.5px solid rgba(214, 0, 28, 0.16)",
-                    boxShadow: "0 0 20px rgba(214, 0, 28, 0.06), 0 0 0 0.5px rgba(255,255,255,0.04) inset",
-                  }}
-                >
-                  <Music className="h-[18px] w-[18px] text-[#D6001C]" strokeWidth={1.5} />
-                </div>
+              <div
+                className="w-11 h-11 rounded-[14px] flex items-center justify-center"
+                style={{
+                  background: "linear-gradient(135deg, rgba(214,0,28,0.12) 0%, rgba(255,59,79,0.05) 100%)",
+                  border: "0.5px solid rgba(214,0,28,0.12)",
+                }}
+              >
+                <Music className="h-5 w-5 text-[#D6001C]" strokeWidth={1.5} />
               </div>
               <div>
-                <h1
-                  className="text-[17px] font-semibold tracking-[-0.025em] text-gradient-accent"
-                >
-                  Mal Deseo
-                </h1>
-                <p className="text-[11px] text-[#6e6e73] mt-[-1px] tracking-[0.01em] font-normal">
-                  Kevin Cano
-                </p>
+                <h1 className="text-[17px] font-semibold text-white tracking-[-0.02em]">Mal Deseo</h1>
+                <p className="text-[12px] text-[#6e6e73] mt-[-1px]">Kevin Cano</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="w-9 h-9 flex items-center justify-center rounded-full text-[#6e6e73] hover:text-white hover:bg-white/[0.04] transition-colors duration-200 relative press-effect"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-[#6e6e73] hover:text-white hover:bg-white/[0.04] transition-colors duration-200 relative"
               >
                 <Bell className="h-[18px] w-[18px]" strokeWidth={1.5} />
                 {unreadCount > 0 && (
                   <span
-                    className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] flex items-center justify-center rounded-full text-[9px] font-bold text-white"
-                    style={{
-                      background: "#D6001C",
-                      boxShadow: "0 0 8px rgba(214, 0, 28, 0.4)",
-                    }}
+                    className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center rounded-full text-[9px] font-bold text-white"
+                    style={{ background: "linear-gradient(135deg, #b91c1c, #D6001C)" }}
                   >
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
               </button>
               <button
-                onClick={handleLogout}
-                className="w-9 h-9 flex items-center justify-center rounded-full text-[#48484a] hover:text-[#D6001C] hover:bg-[#D6001C]/[0.06] transition-colors duration-200 press-effect"
+                onClick={handleSignOut}
+                className="w-10 h-10 flex items-center justify-center rounded-full text-[#48484a] hover:text-[#D6001C] hover:bg-[#D6001C]/[0.06] transition-colors duration-200"
               >
                 <LogOut className="h-[16px] w-[16px]" strokeWidth={1.5} />
               </button>
@@ -326,58 +279,34 @@ export default function Home() {
                   onChange={(e) => handleDateChange(e.target.value)}
                   onBlur={() => setEditingDate(false)}
                   autoFocus
-                  className="text-[15px] font-semibold bg-white/[0.04] border border-white/[0.08] text-white rounded-[10px] px-3 py-1.5 focus:outline-none focus:border-[#D6001C]/30 mt-0.5"
+                  className="premium-input text-[16px] font-semibold mt-1 w-auto"
                 />
               ) : (
                 <button
                   onClick={() => setEditingDate(true)}
-                  className="text-[19px] font-bold text-white mt-0.5 tracking-[-0.025em] hover:text-[#D6001C] transition-colors duration-200 press-effect"
-                  style={{ textShadow: "0 0 30px rgba(255,255,255,0.04)" }}
+                  className="text-[22px] font-bold text-white mt-0.5 tracking-[-0.03em] hover:text-[#D6001C] transition-colors duration-200 text-glow"
                 >
                   {formatDateDisplay(launchDate)}
                 </button>
               )}
             </div>
-            {/* Days counter — dramatic elevated glass container */}
-            <div className="relative">
-              {/* Glow behind the days number */}
-              <div
-                className="absolute inset-0 rounded-[14px] opacity-50"
-                style={{
-                  background: "radial-gradient(ellipse at 50% 40%, rgba(214, 0, 28, 0.08) 0%, transparent 70%)",
-                  filter: "blur(4px)",
-                }}
-              />
-              <div
-                className="relative glass-elevated px-5 py-2.5 text-center min-w-[80px] inner-glow-accent"
-                style={{ borderRadius: "14px" }}
-              >
-                <p className="text-[9px] text-[#6e6e73] uppercase tracking-[0.1em] font-medium">Días</p>
-                <p
-                  className="text-[28px] font-bold text-white leading-none tracking-[-0.03em] mt-[2px]"
-                  style={{ textShadow: "0 0 20px rgba(214, 0, 28, 0.2)" }}
-                >
-                  {daysLeft}
-                </p>
-              </div>
+            <div className="glass-pill px-5 py-3 text-center min-w-[80px]">
+              <p className="text-[9px] text-[#6e6e73] uppercase tracking-[0.1em] font-medium">Días</p>
+              <p className="text-[28px] font-bold text-white leading-tight tracking-[-0.03em] mt-[-2px] text-glow">{daysLeft}</p>
             </div>
           </div>
 
-          {/* Quick stats — refined glass pills */}
-          <div className="flex gap-2 mt-3">
+          {/* Quick stats */}
+          <div className="flex gap-2 mt-4">
             {[
               { label: "Views", value: formatNumber(data.overview.combined.totalViews) },
               { label: "Engagement", value: `${data.overview.instagram.engagementRate}%` },
               { label: "Contenido", value: `${data.content.published}/${data.content.total}` },
               { label: "KPIs", value: `${data.kpis.completed}/${data.kpis.total}` },
             ].map((s) => (
-              <div
-                key={s.label}
-                className="flex-1 glass-pill py-2.5 px-1 text-center inner-glow hover-lift cursor-default"
-                style={{ borderRadius: "12px" }}
-              >
+              <div key={s.label} className="flex-1 glass-pill py-2.5 px-1 text-center">
                 <p className="text-[8px] text-[#6e6e73] uppercase tracking-[0.08em] font-medium">{s.label}</p>
-                <p className="text-[14px] font-bold text-white mt-[2px] tracking-[-0.02em]">{s.value}</p>
+                <p className="text-[14px] font-semibold text-white mt-[1px] tracking-[-0.01em]">{s.value}</p>
               </div>
             ))}
           </div>
@@ -388,42 +317,20 @@ export default function Home() {
       <main className="max-w-md mx-auto px-4 pt-4 pb-28 relative z-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full grid grid-cols-5 h-auto p-[3px] glass-tabs mb-4">
-            {tabConfig.map((tab) => {
-              const isActive = activeTab === tab.key;
-              return (
-                <TabsTrigger
-                  key={tab.key}
-                  value={tab.key}
-                  className={`flex flex-col items-center gap-0.5 py-2 rounded-[8px] transition-all duration-300 cursor-pointer relative ${
-                    isActive
-                      ? "glass-tab-active text-white"
-                      : "text-[#5a5a5e] hover:text-[#8e8e93]"
-                  }`}
-                  style={isActive ? {
-                    boxShadow: "0 0 0 0.5px rgba(214, 0, 28, 0.06) inset, 0 0 24px rgba(214, 0, 28, 0.1), 0 2px 0 0 rgba(214, 0, 28, 0.25)",
-                  } : undefined}
-                >
-                  {/* Animated glow underline for active tab */}
-                  {isActive && (
-                    <span
-                      className="absolute -bottom-[3px] left-1/2 -translate-x-1/2 h-[2px] rounded-full"
-                      style={{
-                        width: "16px",
-                        background: "linear-gradient(90deg, transparent, #D6001C, transparent)",
-                        boxShadow: "0 0 8px rgba(214, 0, 28, 0.5), 0 0 16px rgba(214, 0, 28, 0.2)",
-                      }}
-                    />
-                  )}
-                  <tab.icon
-                    className={`transition-all duration-300 ${isActive ? "h-[15px] w-[15px]" : "h-[14px] w-[14px]"}`}
-                    strokeWidth={isActive ? 1.8 : 1.3}
-                  />
-                  <span className={`text-[8px] font-medium tracking-[0.02em] transition-all duration-300 ${isActive ? "opacity-100" : "opacity-70"}`}>
-                    {tab.label}
-                  </span>
-                </TabsTrigger>
-              );
-            })}
+            {tabConfig.map((tab) => (
+              <TabsTrigger
+                key={tab.key}
+                value={tab.key}
+                className={`flex flex-col items-center gap-0.5 py-2.5 rounded-[10px] transition-all duration-200 cursor-pointer ${
+                  activeTab === tab.key
+                    ? "glass-tab-active text-white"
+                    : "text-[#48484a] hover:text-[#6e6e73]"
+                }`}
+              >
+                <tab.icon className="h-[15px] w-[15px]" strokeWidth={1.5} />
+                <span className="text-[8px] font-medium tracking-[0.02em]">{tab.label}</span>
+              </TabsTrigger>
+            ))}
           </TabsList>
 
           <TabsContent value="dashboard" className="mt-0 space-y-3"><OverviewCards data={data.overview} /></TabsContent>
@@ -431,7 +338,9 @@ export default function Home() {
             <SyncPanel onSynced={fetchData} />
             <TrendChart data={data.dailyTrend} />
           </TabsContent>
-          <TabsContent value="contenido" className="mt-0"><ContentCalendar content={contentPieces} onRefresh={fetchData} /></TabsContent>
+          <TabsContent value="contenido" className="mt-0">
+            <ContentCalendar content={contentPieces} onRefresh={fetchData} />
+          </TabsContent>
           <TabsContent value="kpis" className="mt-0"><KPIPanel data={data.kpis.items} /></TabsContent>
           <TabsContent value="timeline" className="mt-0"><TimelineView data={data.events.items} /></TabsContent>
         </Tabs>
@@ -451,44 +360,21 @@ export default function Home() {
 
       {/* ─── Bottom Nav ─── */}
       <nav className="fixed bottom-0 left-0 right-0 glass-nav z-50">
-        {/* Subtle top-edge highlight line */}
-        <div
-          className="absolute top-0 left-0 right-0 h-[0.5px]"
-          style={{
-            background: "linear-gradient(90deg, transparent 5%, rgba(214, 0, 28, 0.15) 30%, rgba(255, 255, 255, 0.08) 50%, rgba(214, 0, 28, 0.15) 70%, transparent 95%)",
-          }}
-        />
         <div className="max-w-md mx-auto flex items-center justify-around pt-2 pb-safe">
-          {tabConfig.map((tab) => {
-            const isActive = activeTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => switchTab(tab.key)}
-                className={`flex flex-col items-center gap-[2px] py-1 px-4 transition-all duration-300 tap-feedback relative ${
-                  isActive ? "text-[#D6001C]" : "text-[#48484a]"
-                }`}
-              >
-                {/* Red dot indicator above active icon */}
-                {isActive && (
-                  <span
-                    className="absolute -top-[3px] left-1/2 -translate-x-1/2 w-[4px] h-[4px] rounded-full"
-                    style={{
-                      background: "#D6001C",
-                      boxShadow: "0 0 6px rgba(214, 0, 28, 0.6), 0 0 12px rgba(214, 0, 28, 0.2)",
-                    }}
-                  />
-                )}
-                <tab.icon
-                  className={`transition-all duration-300 ${isActive ? "h-[19px] w-[19px]" : "h-[17px] w-[17px]"}`}
-                  strokeWidth={isActive ? 1.8 : 1.2}
-                />
-                <span className={`text-[9px] font-medium tracking-[0.02em] transition-all duration-300 ${isActive ? "opacity-100" : "opacity-50"}`}>
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
+          {tabConfig.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => switchTab(tab.key)}
+              className={`flex flex-col items-center gap-[2px] py-1.5 px-4 transition-all duration-200 tap-feedback ${
+                activeTab === tab.key
+                  ? "text-[#D6001C]"
+                  : "text-[#48484a]"
+              }`}
+            >
+              <tab.icon className="h-[19px] w-[19px]" strokeWidth={activeTab === tab.key ? 1.8 : 1.2} />
+              <span className="text-[9px] font-medium tracking-[0.02em]">{tab.label}</span>
+            </button>
+          ))}
         </div>
       </nav>
     </div>
