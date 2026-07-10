@@ -28,7 +28,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#000000",
+  themeColor: "#050207",
 };
 
 export default function RootLayout({
@@ -45,7 +45,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Mal Deseo" />
       </head>
       <body
-        className={`${geistSans.variable} antialiased bg-black text-white selection:bg-[#D6001C]/30`}
+        className={`${geistSans.variable} antialiased bg-[#050207] text-[#f0eef5] selection:bg-[#EF4444]/30`}
         style={{ fontFamily: 'var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif' }}
       >
         <Script id="register-sw" strategy="afterInteractive">

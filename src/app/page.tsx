@@ -43,15 +43,15 @@ function LandingPage() {
       <div className="relative z-10 text-center">
         <div className="landing-fade-in inline-block">
           <div
-            className="mx-auto rounded-[26px] flex items-center justify-center"
+            className="w-22 h-22 mx-auto rounded-[26px] flex items-center justify-center"
             style={{
               width: "88px", height: "88px",
-              background: "linear-gradient(135deg, rgba(214,0,28,0.15) 0%, rgba(255,59,79,0.06) 100%)",
-              border: "0.5px solid rgba(214,0,28,0.15)",
-              boxShadow: "0 0 60px rgba(214,0,28,0.08), 0 0 0 0.5px rgba(255,255,255,0.04) inset",
+              background: "linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(220,38,38,0.08) 100%)",
+              border: "0.5px solid rgba(239,68,68,0.15)",
+              boxShadow: "0 0 60px rgba(239,68,68,0.1), 0 0 0 0.5px rgba(255,255,255,0.04) inset",
             }}
           >
-            <Music className="h-10 w-10 text-[#D6001C]" strokeWidth={1.5} />
+            <Music className="h-10 w-10 text-[#F87171]" strokeWidth={1.5} />
           </div>
         </div>
 
@@ -61,10 +61,10 @@ function LandingPage() {
         >
           MAL DESEO
         </h1>
-        <p className="text-[#6e6e73] text-[15px] mt-2 landing-fade-in-delay-1 font-normal">
+        <p className="text-[#6e6a7a] text-[15px] mt-2 landing-fade-in-delay-1 font-normal">
           Kevin Cano — Bachata
         </p>
-        <p className="text-[#48484a] text-[11px] mt-1.5 tracking-[0.25em] uppercase landing-fade-in-delay-2 font-medium">
+        <p className="text-[#3d3850] text-[11px] mt-1.5 tracking-[0.25em] uppercase landing-fade-in-delay-2 font-medium">
           Launch Tracker
         </p>
 
@@ -139,17 +139,21 @@ export default function Home() {
   const [launchDate, setLaunchDate] = useState("2025-08-04");
   const [editingDate, setEditingDate] = useState(false);
 
+  // Cookie-based auth check
   useEffect(() => {
     const check = async () => {
       try {
         const r = await fetch("/api/demo-login", { method: "GET" });
-        if (r.ok) setAuthenticated(true);
+        if (r.ok) {
+          setAuthenticated(true);
+        }
       } catch {}
       setChecking(false);
     };
     check();
   }, []);
 
+  // Notifications
   const { notifications, unreadCount, isOpen: notifOpen, setIsOpen: setNotifOpen, markAllRead, markRead, dismiss, panelRef } = useNotifications(
     data ? { content: data.content, kpis: data.kpis } : {}
   );
@@ -192,16 +196,18 @@ export default function Home() {
     window.location.href = "/";
   };
 
+  /* ─── Loading ─── */
   if (checking) {
     return (
       <div className="app-bg min-h-screen flex items-center justify-center">
-        <div className="w-5 h-5 border-[1.5px] border-white/10 border-t-[#D6001C] rounded-full animate-spin" />
+        <div className="w-5 h-5 border-[1.5px] border-white/10 border-t-[#EF4444] rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!authenticated) return <LandingPage />;
 
+  /* ─── Skeleton ─── */
   if (loading || !data) {
     return (
       <div className="app-bg min-h-screen pb-28">
@@ -228,32 +234,33 @@ export default function Home() {
       {/* ─── Header ─── */}
       <header className="glass-header px-5 pb-5 pt-safe relative z-10">
         <div className="max-w-md mx-auto">
+          {/* Top row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div
                 className="w-11 h-11 rounded-[14px] flex items-center justify-center"
                 style={{
-                  background: "linear-gradient(135deg, rgba(214,0,28,0.12) 0%, rgba(255,59,79,0.05) 100%)",
-                  border: "0.5px solid rgba(214,0,28,0.12)",
+                  background: "linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(220,38,38,0.06) 100%)",
+                  border: "0.5px solid rgba(239,68,68,0.12)",
                 }}
               >
-                <Music className="h-5 w-5 text-[#D6001C]" strokeWidth={1.5} />
+                <Music className="h-5 w-5 text-[#F87171]" strokeWidth={1.5} />
               </div>
               <div>
                 <h1 className="text-[17px] font-semibold text-white tracking-[-0.02em]">Mal Deseo</h1>
-                <p className="text-[12px] text-[#6e6e73] mt-[-1px]">Kevin Cano</p>
+                <p className="text-[12px] text-[#6e6a7a] mt-[-1px]">Kevin Cano</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-[#6e6e73] hover:text-white hover:bg-white/[0.04] transition-colors duration-200 relative"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-[#6e6a7a] hover:text-white hover:bg-white/[0.04] transition-colors duration-200 relative"
               >
                 <Bell className="h-[18px] w-[18px]" strokeWidth={1.5} />
                 {unreadCount > 0 && (
                   <span
                     className="absolute top-1 right-1 min-w-[16px] h-[16px] flex items-center justify-center rounded-full text-[9px] font-bold text-white"
-                    style={{ background: "linear-gradient(135deg, #b91c1c, #D6001C)" }}
+                    style={{ background: "linear-gradient(135deg, #DC2626, #EF4444)" }}
                   >
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
@@ -261,7 +268,7 @@ export default function Home() {
               </button>
               <button
                 onClick={handleSignOut}
-                className="w-10 h-10 flex items-center justify-center rounded-full text-[#48484a] hover:text-[#D6001C] hover:bg-[#D6001C]/[0.06] transition-colors duration-200"
+                className="w-10 h-10 flex items-center justify-center rounded-full text-[#3d3850] hover:text-[#F87171] hover:bg-[#EF4444]/[0.06] transition-colors duration-200"
               >
                 <LogOut className="h-[16px] w-[16px]" strokeWidth={1.5} />
               </button>
@@ -271,7 +278,7 @@ export default function Home() {
           {/* Countdown */}
           <div className="flex items-center justify-between mt-4">
             <div>
-              <p className="text-[10px] text-[#6e6e73] uppercase tracking-[0.12em] font-medium">Lanzamiento</p>
+              <p className="text-[10px] text-[#6e6a7a] uppercase tracking-[0.12em] font-medium">Lanzamiento</p>
               {editingDate ? (
                 <input
                   type="date"
@@ -284,14 +291,14 @@ export default function Home() {
               ) : (
                 <button
                   onClick={() => setEditingDate(true)}
-                  className="text-[22px] font-bold text-white mt-0.5 tracking-[-0.03em] hover:text-[#D6001C] transition-colors duration-200 text-glow"
+                  className="text-[22px] font-bold text-white mt-0.5 tracking-[-0.03em] hover:text-[#F87171] transition-colors duration-200 text-glow"
                 >
                   {formatDateDisplay(launchDate)}
                 </button>
               )}
             </div>
             <div className="glass-pill px-5 py-3 text-center min-w-[80px]">
-              <p className="text-[9px] text-[#6e6e73] uppercase tracking-[0.1em] font-medium">Días</p>
+              <p className="text-[9px] text-[#6e6a7a] uppercase tracking-[0.1em] font-medium">Días</p>
               <p className="text-[28px] font-bold text-white leading-tight tracking-[-0.03em] mt-[-2px] text-glow">{daysLeft}</p>
             </div>
           </div>
@@ -305,7 +312,7 @@ export default function Home() {
               { label: "KPIs", value: `${data.kpis.completed}/${data.kpis.total}` },
             ].map((s) => (
               <div key={s.label} className="flex-1 glass-pill py-2.5 px-1 text-center">
-                <p className="text-[8px] text-[#6e6e73] uppercase tracking-[0.08em] font-medium">{s.label}</p>
+                <p className="text-[8px] text-[#6e6a7a] uppercase tracking-[0.08em] font-medium">{s.label}</p>
                 <p className="text-[14px] font-semibold text-white mt-[1px] tracking-[-0.01em]">{s.value}</p>
               </div>
             ))}
@@ -324,7 +331,7 @@ export default function Home() {
                 className={`flex flex-col items-center gap-0.5 py-2.5 rounded-[10px] transition-all duration-200 cursor-pointer ${
                   activeTab === tab.key
                     ? "glass-tab-active text-white"
-                    : "text-[#48484a] hover:text-[#6e6e73]"
+                    : "text-[#3d3850] hover:text-[#6e6a7a]"
                 }`}
               >
                 <tab.icon className="h-[15px] w-[15px]" strokeWidth={1.5} />
@@ -367,8 +374,8 @@ export default function Home() {
               onClick={() => switchTab(tab.key)}
               className={`flex flex-col items-center gap-[2px] py-1.5 px-4 transition-all duration-200 tap-feedback ${
                 activeTab === tab.key
-                  ? "text-[#D6001C]"
-                  : "text-[#48484a]"
+                  ? "text-[#F87171]"
+                  : "text-[#3d3850]"
               }`}
             >
               <tab.icon className="h-[19px] w-[19px]" strokeWidth={activeTab === tab.key ? 1.8 : 1.2} />
