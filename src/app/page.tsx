@@ -340,7 +340,7 @@ export default function Home() {
             ))}
           </TabsList>
 
-          <TabsContent value="dashboard" className="mt-0 space-y-3"><OverviewCards data={data.overview} /></TabsContent>
+          <TabsContent value="dashboard" className="mt-0"><OverviewCards data={data.overview} trendData={data.dailyTrend} /></TabsContent>
           <TabsContent value="tendencia" className="mt-0 space-y-3">
             <SyncPanel onSynced={fetchData} />
             <TrendChart data={data.dailyTrend} />
