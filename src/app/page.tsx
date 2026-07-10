@@ -108,6 +108,11 @@ interface DashboardData {
   dailyTrend: Array<{ date: string; tiktok: number; instagram: number }>;
 }
 
+interface ContentPiece {
+  id: string; title: string; description: string | null; platform: string;
+  contentType: string; status: string; scheduledDate: string | null; notes: string | null;
+}
+
 const tabConfig = [
   { key: "dashboard", label: "Resumen", icon: TrendingUp },
   { key: "tendencia", label: "Tendencia", icon: BarChart3 },
@@ -139,6 +144,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [launchDate, setLaunchDate] = useState("2025-08-04");
   const [editingDate, setEditingDate] = useState(false);
+  const [contentPieces, setContentPieces] = useState<ContentPiece[]>([]);
 
   // Notifications
   const { notifications, unreadCount, isOpen: notifOpen, setIsOpen: setNotifOpen, markAllRead, markRead, dismiss, panelRef } = useNotifications(
@@ -172,9 +178,16 @@ export default function Home() {
 
   const fetchData = useCallback(async () => {
     try {
-      const res = await fetch("/api/dashboard");
-      if (res.ok) setData(await res.json());
-    } catch (e) { console.error("Failed to fetch dashboard", e); }
+      const [dashRes, contentRes] = await Promise.all([
+        fetch("/api/dashboard"),
+        fetch("/api/content"),
+      ]);
+      if (dashRes.ok) setData(await dashRes.json());
+      if (contentRes.ok) {
+        const contentData = await contentRes.json();
+        if (Array.isArray(contentData)) setContentPieces(contentData);
+      }
+    } catch (e) { console.error("Failed to fetch data", e); }
     finally { setLoading(false); }
   }, []);
 
@@ -336,7 +349,7 @@ export default function Home() {
             <SyncPanel onSynced={fetchData} />
             <TrendChart data={data.dailyTrend} />
           </TabsContent>
-          <TabsContent value="contenido" className="mt-0"><ContentCalendar /></TabsContent>
+          <TabsContent value="contenido" className="mt-0"><ContentCalendar content={contentPieces} onRefresh={fetchData} /></TabsContent>
           <TabsContent value="kpis" className="mt-0"><KPIPanel data={data.kpis.items} /></TabsContent>
           <TabsContent value="timeline" className="mt-0"><TimelineView data={data.events.items} /></TabsContent>
         </Tabs>
