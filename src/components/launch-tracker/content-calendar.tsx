@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   CheckCircle2, Circle, Clock, PlayCircle, Plus, Film, Tv, Music, Camera,
@@ -36,21 +37,21 @@ const strategyAdvice: Record<string, { objective: string; tips: string[]; bestTi
       "Usa los primeros 3-5 segundos del coro o el hook mas pegadizo",
       "Publica en horarios de alta actividad (7-9pm) para maximizar alcance organico",
       "NO muestres la cara del artista aun — genera misterio y especulacion",
-      "Usa texto tipo Listo para esto? para crear engagement inmediato",
+      "Usa texto tipo '¿Listo para esto?' para crear engagement inmediato",
     ],
     bestTime: "Mar a Jue, 7:00-9:00 PM",
-    hashtagStrategy: "#bachata2025 #nuevamusic #maldeseo #kevincano #trending #fyp",
+    hashtagStrategy: "#bachata2025 #nuevamusica #maldeseo #kevincano #trending #fyp",
   },
   snippet: {
     objective: "Mostrar un fragmento adictivo de 10-15 segundos que se quede en la cabeza del oyente y funcione como earworm.",
     tips: [
       "Elige el momento mas memorable musicalmente — un run vocal o un drop",
-      "Usa la tecnica split screen mostrando la reaccion de alguien al escucharlo",
-      "Acompana con CTA claro: Guarda este sonido o Quieres mas? Siguerme",
+      "Usa la tecnica 'split screen' mostrando la reaccion de alguien al escucharlo",
+      "Acompana con CTA claro: 'Guarda este sonido' o '¿Quieres mas? Siguerme'",
       "Considera crear un sonido original de TikTok para que otros lo usen",
     ],
     bestTime: "Vie y Sab (fin de semana = mas descubrimiento)",
-    hashtagStrategy: "#soundoriginal #snippet #maldeseo #kevincano #nuevsonido",
+    hashtagStrategy: "#soundoriginal #snippet #maldeseo #kevincano #nuevasonido",
   },
   lyric_video: {
     objective: "Conectar emocionalmente con la letra. Las letras bien hechas en video generan shares y saves significativamente mas.",
@@ -77,9 +78,9 @@ const strategyAdvice: Record<string, { objective: string; tips: string[]; bestTi
   story: {
     objective: "Mantener presencia diaria sin saturar. Stories son ideales para micro-contenido y updates que mantienen engagement alto.",
     tips: [
-      "Usa stickers interactivos: encuestas Que prefieres?, sliders",
+      "Usa stickers interactivos: encuestas '¿Que prefieres?', sliders",
       "Cuenta un dato interesante del dia en cada story",
-      "Haz countdown stories cada vez que falten menos dias",
+      "Haz 'countdown stories' cada vez que falten menos dias",
       "Pregunta a tu audiencia para generar conversacion",
     ],
     bestTime: "12PM, 7PM y 10PM (2-3 por dia)",
@@ -108,7 +109,7 @@ function getWeekLabel(dateStr: string): string {
 export default function ContentCalendar() {
   const [content, setContent] = useState<ContentPiece[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAdd, setShowAdd] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [newItem, setNewItem] = useState({ title: "", description: "", platform: "ambas", contentType: "reel", scheduledDate: "", notes: "" });
 
@@ -131,7 +132,7 @@ export default function ContentCalendar() {
         const created = await r.json();
         setContent((p) => [...p, created].sort((a, b) => (a.scheduledDate || "").localeCompare(b.scheduledDate || "")));
         setNewItem({ title: "", description: "", platform: "ambas", contentType: "reel", scheduledDate: "", notes: "" });
-        setShowAdd(false); toast.success("Contenido agregado");
+        setShowForm(false); toast.success("Contenido agregado");
       }
     } catch { toast.error("Error al agregar"); }
   };
@@ -162,54 +163,71 @@ export default function ContentCalendar() {
           Calendario de Contenido
         </p>
         <button
-          onClick={() => setShowAdd(!showAdd)}
+          onClick={() => setShowForm(!showForm)}
           className="h-8 px-3 rounded-[10px] text-[13px] font-medium text-white tap-feedback flex items-center gap-1.5"
           style={{ background: "#D6001C" }}
         >
-          <Plus className="h-[14px] w-[14px]" strokeWidth={2} />
-          Agregar
+          {showForm ? <X className="h-[14px] w-[14px]" strokeWidth={2} /> : <Plus className="h-[14px] w-[14px]" strokeWidth={2} />}
+          {showForm ? "Cancelar" : "Agregar"}
         </button>
       </div>
 
-      {/* Add Form (inline, no Dialog) */}
-      {showAdd && (
-        <div className="glass p-4 space-y-3 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <p className="text-[14px] font-semibold text-white">Nueva Pieza de Contenido</p>
-            <button onClick={() => setShowAdd(false)} className="text-[#6e6e73] hover:text-white p-1"><X className="h-4 w-4" /></button>
-          </div>
+      {/* Inline form (replaces Dialog) */}
+      {showForm && (
+        <div className="glass p-4 space-y-3">
           <div>
             <label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Titulo *</label>
-            <input value={newItem.title} onChange={(e) => setNewItem((p) => ({ ...p, title: e.target.value }))} placeholder="Ej: Teaser #5"
-              className="mt-1.5 w-full h-10 px-3 text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] outline-none focus:border-[#D6001C]/40" />
+            <input
+              type="text"
+              value={newItem.title}
+              onChange={(e) => setNewItem((p) => ({ ...p, title: e.target.value }))}
+              placeholder="Ej: Teaser #5"
+              className="mt-1.5 h-10 w-full text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] px-3 outline-none focus:border-white/20"
+            />
           </div>
           <div>
             <label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Descripcion</label>
-            <textarea value={newItem.description} onChange={(e) => setNewItem((p) => ({ ...p, description: e.target.value }))} placeholder="Detalles..."
-              className="mt-1.5 w-full text-[14px] min-h-[56px] p-3 bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] outline-none focus:border-[#D6001C]/40 resize-none" />
+            <textarea
+              value={newItem.description}
+              onChange={(e) => setNewItem((p) => ({ ...p, description: e.target.value }))}
+              placeholder="Detalles..."
+              className="mt-1.5 w-full text-[14px] min-h-[56px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] p-3 outline-none focus:border-white/20 resize-none"
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Plataforma</label>
-              <select value={newItem.platform} onChange={(e) => setNewItem((p) => ({ ...p, platform: e.target.value }))}
-                className="mt-1.5 w-full h-10 px-3 text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] outline-none appearance-none">
-                <option value="tiktok" style={{background:'#1c1c1e'}}>TikTok</option>
-                <option value="instagram" style={{background:'#1c1c1e'}}>Instagram</option>
-                <option value="ambas" style={{background:'#1c1c1e'}}>Ambas</option>
+              <select
+                value={newItem.platform}
+                onChange={(e) => setNewItem((p) => ({ ...p, platform: e.target.value }))}
+                className="mt-1.5 h-10 w-full text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] px-3 outline-none"
+              >
+                <option value="tiktok">TikTok</option>
+                <option value="instagram">Instagram</option>
+                <option value="ambas">Ambas</option>
               </select>
             </div>
             <div>
               <label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Tipo</label>
-              <select value={newItem.contentType} onChange={(e) => setNewItem((p) => ({ ...p, contentType: e.target.value }))}
-                className="mt-1.5 w-full h-10 px-3 text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] outline-none appearance-none">
-                {Object.entries(contentTypeLabel).map(([k, v]) => <option key={k} value={k} style={{background:'#1c1c1e'}}>{v}</option>)}
+              <select
+                value={newItem.contentType}
+                onChange={(e) => setNewItem((p) => ({ ...p, contentType: e.target.value }))}
+                className="mt-1.5 h-10 w-full text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] px-3 outline-none"
+              >
+                {Object.entries(contentTypeLabel).map(([k, v]) => (
+                  <option key={k} value={k}>{v}</option>
+                ))}
               </select>
             </div>
           </div>
           <div>
             <label className="text-[11px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">Fecha *</label>
-            <input type="date" value={newItem.scheduledDate} onChange={(e) => setNewItem((p) => ({ ...p, scheduledDate: e.target.value }))}
-              className="mt-1.5 w-full h-10 px-3 text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] outline-none focus:border-[#D6001C]/40" />
+            <input
+              type="date"
+              value={newItem.scheduledDate}
+              onChange={(e) => setNewItem((p) => ({ ...p, scheduledDate: e.target.value }))}
+              className="mt-1.5 h-10 w-full text-[14px] bg-white/[0.04] border border-white/[0.06] text-white rounded-[12px] px-3 outline-none focus:border-white/20"
+            />
           </div>
           <button
             onClick={handleAdd}
