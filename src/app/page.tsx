@@ -47,11 +47,12 @@ function LandingPage() {
       <div className="relative z-10 text-center">
         <div className="landing-fade-in inline-block">
           <div
-            className="w-20 h-20 mx-auto rounded-[22px] flex items-center justify-center"
+            className="w-20 h-20 mx-auto rounded-[22px] flex items-center justify-center inner-glow-accent"
             style={{
               background: "rgba(214, 0, 28, 0.12)",
-              border: "0.5px solid rgba(214, 0, 28, 0.15)",
-              boxShadow: "0 0 40px rgba(214, 0, 28, 0.08), 0 0 0 0.5px rgba(255,255,255,0.04) inset",
+              border: "0.5px solid rgba(214, 0, 28, 0.18)",
+              boxShadow:
+                "0 0 60px rgba(214, 0, 28, 0.1), 0 0 0 0.5px rgba(255,255,255,0.04) inset, 0 0 0 1px rgba(214, 0, 28, 0.08)",
             }}
           >
             <Music className="h-9 w-9 text-[#D6001C]" strokeWidth={1.5} />
@@ -59,15 +60,21 @@ function LandingPage() {
         </div>
 
         <h1
-          className="text-[44px] font-bold tracking-tight text-white mt-8 landing-fade-in-delay-1"
-          style={{ letterSpacing: "-0.03em" }}
+          className="text-[52px] font-bold text-white mt-8 landing-fade-in-delay-1 text-display"
+          style={{
+            letterSpacing: "-0.045em",
+            textShadow: "0 0 80px rgba(214, 0, 28, 0.15), 0 0 40px rgba(214, 0, 28, 0.06)",
+          }}
         >
           MAL DESEO
         </h1>
-        <p className="text-[#6e6e73] text-[15px] mt-1.5 landing-fade-in-delay-1 font-normal">
+        <p
+          className="text-[15px] mt-2 landing-fade-in-delay-1 font-normal tracking-[-0.01em]"
+          style={{ color: "rgba(142, 142, 147, 0.85)" }}
+        >
           Kevin Cano — Bachata
         </p>
-        <p className="text-[#48484a] text-[11px] mt-1 tracking-[0.2em] uppercase landing-fade-in-delay-2 font-medium">
+        <p className="text-[11px] mt-1.5 tracking-[0.2em] uppercase landing-fade-in-delay-2 font-medium text-[#48484a]">
           Launch Tracker
         </p>
 
@@ -75,10 +82,10 @@ function LandingPage() {
           <button
             onClick={handleDemoLogin}
             disabled={loading}
-            className="tap-feedback w-[260px] h-[50px] rounded-[14px] text-[15px] font-semibold tracking-[-0.01em] text-white transition-all duration-200 hover:opacity-90 active:opacity-80 disabled:opacity-40"
+            className="btn-premium btn-premium-primary tap-feedback w-[260px] h-[50px] rounded-[14px] text-[15px] font-semibold tracking-[-0.01em] text-white"
             style={{
-              background: "#D6001C",
-              boxShadow: "0 2px 20px rgba(214, 0, 28, 0.25)",
+              boxShadow:
+                "0 0 0 0.5px rgba(214, 0, 28, 0.3) inset, 0 2px 20px rgba(214, 0, 28, 0.35), 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 60px rgba(214, 0, 28, 0.08)",
             }}
           >
             {loading ? (
@@ -209,19 +216,29 @@ export default function Home() {
 
   if (!authenticated) return <LandingPage />;
 
-  /* ─── Skeleton ─── */
+  /* ─── Skeleton (Premium Shimmer) ─── */
   if (loading || !data) {
     return (
       <div className="app-bg min-h-screen pb-28">
         <div className="pt-safe" />
         <div className="px-5 pt-14 pb-6">
-          <Skeleton className="h-5 w-32 rounded-lg bg-white/[0.04]" />
-          <Skeleton className="h-3 w-20 rounded-lg bg-white/[0.04] mt-2" />
+          <div className="shimmer inline-block rounded-lg">
+            <Skeleton className="h-5 w-32 rounded-lg bg-white/[0.04]" />
+          </div>
+          <div className="shimmer inline-block rounded-lg mt-2">
+            <Skeleton className="h-3 w-20 rounded-lg bg-white/[0.04]" />
+          </div>
         </div>
         <div className="px-5 space-y-3">
-          <Skeleton className="h-24 w-full rounded-2xl bg-white/[0.03]" />
-          <Skeleton className="h-32 w-full rounded-2xl bg-white/[0.03]" />
-          <Skeleton className="h-48 w-full rounded-2xl bg-white/[0.03]" />
+          <div className="shimmer rounded-2xl">
+            <Skeleton className="h-24 w-full rounded-2xl bg-white/[0.03]" />
+          </div>
+          <div className="shimmer rounded-2xl">
+            <Skeleton className="h-32 w-full rounded-2xl bg-white/[0.03]" />
+          </div>
+          <div className="shimmer rounded-2xl">
+            <Skeleton className="h-48 w-full rounded-2xl bg-white/[0.03]" />
+          </div>
         </div>
       </div>
     );
@@ -239,18 +256,34 @@ export default function Home() {
           {/* Top row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded-[12px] flex items-center justify-center"
-                style={{
-                  background: "rgba(214, 0, 28, 0.1)",
-                  border: "0.5px solid rgba(214, 0, 28, 0.12)",
-                }}
-              >
-                <Music className="h-[18px] w-[18px] text-[#D6001C]" strokeWidth={1.5} />
+              {/* Logo icon — rotating gradient border + inner glow */}
+              <div className="relative">
+                <div
+                  className="absolute -inset-[2px] rounded-[14px] opacity-60"
+                  style={{
+                    background: "conic-gradient(from 0deg, rgba(214,0,28,0.2), rgba(214,0,28,0.02), rgba(214,0,28,0.15), rgba(214,0,28,0.02), rgba(214,0,28,0.2))",
+                    animation: "spin-slow 8s linear infinite",
+                    filter: "blur(1px)",
+                  }}
+                />
+                <div
+                  className="relative w-10 h-10 rounded-[12px] flex items-center justify-center inner-glow-accent"
+                  style={{
+                    background: "rgba(214, 0, 28, 0.1)",
+                    border: "0.5px solid rgba(214, 0, 28, 0.16)",
+                    boxShadow: "0 0 20px rgba(214, 0, 28, 0.06), 0 0 0 0.5px rgba(255,255,255,0.04) inset",
+                  }}
+                >
+                  <Music className="h-[18px] w-[18px] text-[#D6001C]" strokeWidth={1.5} />
+                </div>
               </div>
               <div>
-                <h1 className="text-[17px] font-semibold text-white tracking-[-0.02em]">Mal Deseo</h1>
-                <p className="text-[12px] text-[#6e6e73] mt-[-1px]">
+                <h1
+                  className="text-[17px] font-semibold tracking-[-0.025em] text-gradient-accent"
+                >
+                  Mal Deseo
+                </h1>
+                <p className="text-[11px] text-[#6e6e73] mt-[-1px] tracking-[0.01em] font-normal">
                   Kevin Cano
                 </p>
               </div>
@@ -258,13 +291,16 @@ export default function Home() {
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="w-9 h-9 flex items-center justify-center rounded-full text-[#6e6e73] hover:text-white hover:bg-white/[0.04] transition-colors duration-200 relative"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-[#6e6e73] hover:text-white hover:bg-white/[0.04] transition-colors duration-200 relative press-effect"
               >
                 <Bell className="h-[18px] w-[18px]" strokeWidth={1.5} />
                 {unreadCount > 0 && (
                   <span
                     className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] flex items-center justify-center rounded-full text-[9px] font-bold text-white"
-                    style={{ background: "#D6001C" }}
+                    style={{
+                      background: "#D6001C",
+                      boxShadow: "0 0 8px rgba(214, 0, 28, 0.4)",
+                    }}
                   >
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
@@ -272,7 +308,7 @@ export default function Home() {
               </button>
               <button
                 onClick={handleLogout}
-                className="w-9 h-9 flex items-center justify-center rounded-full text-[#48484a] hover:text-[#D6001C] hover:bg-[#D6001C]/[0.06] transition-colors duration-200"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-[#48484a] hover:text-[#D6001C] hover:bg-[#D6001C]/[0.06] transition-colors duration-200 press-effect"
               >
                 <LogOut className="h-[16px] w-[16px]" strokeWidth={1.5} />
               </button>
@@ -280,9 +316,9 @@ export default function Home() {
           </div>
 
           {/* Countdown */}
-          <div className="flex items-center justify-between mt-3">
+          <div className="flex items-center justify-between mt-4">
             <div>
-              <p className="text-[11px] text-[#6e6e73] uppercase tracking-[0.1em] font-medium">Lanzamiento</p>
+              <p className="text-[10px] text-[#6e6e73] uppercase tracking-[0.12em] font-medium">Lanzamiento</p>
               {editingDate ? (
                 <input
                   type="date"
@@ -295,19 +331,39 @@ export default function Home() {
               ) : (
                 <button
                   onClick={() => setEditingDate(true)}
-                  className="text-[20px] font-bold text-white mt-0.5 tracking-[-0.02em] hover:text-[#D6001C] transition-colors duration-200"
+                  className="text-[19px] font-bold text-white mt-0.5 tracking-[-0.025em] hover:text-[#D6001C] transition-colors duration-200 press-effect"
+                  style={{ textShadow: "0 0 30px rgba(255,255,255,0.04)" }}
                 >
                   {formatDateDisplay(launchDate)}
                 </button>
               )}
             </div>
-            <div className="glass-pill px-4 py-2.5 text-center min-w-[72px]">
-              <p className="text-[10px] text-[#6e6e73] uppercase tracking-[0.08em] font-medium">Días</p>
-              <p className="text-[24px] font-bold text-white leading-tight tracking-[-0.02em] mt-[-1px]">{daysLeft}</p>
+            {/* Days counter — dramatic elevated glass container */}
+            <div className="relative">
+              {/* Glow behind the days number */}
+              <div
+                className="absolute inset-0 rounded-[14px] opacity-50"
+                style={{
+                  background: "radial-gradient(ellipse at 50% 40%, rgba(214, 0, 28, 0.08) 0%, transparent 70%)",
+                  filter: "blur(4px)",
+                }}
+              />
+              <div
+                className="relative glass-elevated px-5 py-2.5 text-center min-w-[80px] inner-glow-accent"
+                style={{ borderRadius: "14px" }}
+              >
+                <p className="text-[9px] text-[#6e6e73] uppercase tracking-[0.1em] font-medium">Días</p>
+                <p
+                  className="text-[28px] font-bold text-white leading-none tracking-[-0.03em] mt-[2px]"
+                  style={{ textShadow: "0 0 20px rgba(214, 0, 28, 0.2)" }}
+                >
+                  {daysLeft}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Quick stats */}
+          {/* Quick stats — refined glass pills */}
           <div className="flex gap-2 mt-3">
             {[
               { label: "Views", value: formatNumber(data.overview.combined.totalViews) },
@@ -315,9 +371,13 @@ export default function Home() {
               { label: "Contenido", value: `${data.content.published}/${data.content.total}` },
               { label: "KPIs", value: `${data.kpis.completed}/${data.kpis.total}` },
             ].map((s) => (
-              <div key={s.label} className="flex-1 glass-pill py-2 px-1 text-center">
-                <p className="text-[9px] text-[#6e6e73] uppercase tracking-[0.06em] font-medium">{s.label}</p>
-                <p className="text-[13px] font-semibold text-white mt-[1px] tracking-[-0.01em]">{s.value}</p>
+              <div
+                key={s.label}
+                className="flex-1 glass-pill py-2.5 px-1 text-center inner-glow hover-lift cursor-default"
+                style={{ borderRadius: "12px" }}
+              >
+                <p className="text-[8px] text-[#6e6e73] uppercase tracking-[0.08em] font-medium">{s.label}</p>
+                <p className="text-[14px] font-bold text-white mt-[2px] tracking-[-0.02em]">{s.value}</p>
               </div>
             ))}
           </div>
@@ -328,20 +388,42 @@ export default function Home() {
       <main className="max-w-md mx-auto px-4 pt-4 pb-28 relative z-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full grid grid-cols-5 h-auto p-[3px] glass-tabs mb-4">
-            {tabConfig.map((tab) => (
-              <TabsTrigger
-                key={tab.key}
-                value={tab.key}
-                className={`flex flex-col items-center gap-0.5 py-2 rounded-[8px] transition-all duration-200 cursor-pointer ${
-                  activeTab === tab.key
-                    ? "glass-tab-active text-white"
-                    : "text-[#48484a] hover:text-[#6e6e73]"
-                }`}
-              >
-                <tab.icon className="h-[15px] w-[15px]" strokeWidth={1.5} />
-                <span className="text-[8px] font-medium tracking-[0.02em]">{tab.label}</span>
-              </TabsTrigger>
-            ))}
+            {tabConfig.map((tab) => {
+              const isActive = activeTab === tab.key;
+              return (
+                <TabsTrigger
+                  key={tab.key}
+                  value={tab.key}
+                  className={`flex flex-col items-center gap-0.5 py-2 rounded-[8px] transition-all duration-300 cursor-pointer relative ${
+                    isActive
+                      ? "glass-tab-active text-white"
+                      : "text-[#5a5a5e] hover:text-[#8e8e93]"
+                  }`}
+                  style={isActive ? {
+                    boxShadow: "0 0 0 0.5px rgba(214, 0, 28, 0.06) inset, 0 0 24px rgba(214, 0, 28, 0.1), 0 2px 0 0 rgba(214, 0, 28, 0.25)",
+                  } : undefined}
+                >
+                  {/* Animated glow underline for active tab */}
+                  {isActive && (
+                    <span
+                      className="absolute -bottom-[3px] left-1/2 -translate-x-1/2 h-[2px] rounded-full"
+                      style={{
+                        width: "16px",
+                        background: "linear-gradient(90deg, transparent, #D6001C, transparent)",
+                        boxShadow: "0 0 8px rgba(214, 0, 28, 0.5), 0 0 16px rgba(214, 0, 28, 0.2)",
+                      }}
+                    />
+                  )}
+                  <tab.icon
+                    className={`transition-all duration-300 ${isActive ? "h-[15px] w-[15px]" : "h-[14px] w-[14px]"}`}
+                    strokeWidth={isActive ? 1.8 : 1.3}
+                  />
+                  <span className={`text-[8px] font-medium tracking-[0.02em] transition-all duration-300 ${isActive ? "opacity-100" : "opacity-70"}`}>
+                    {tab.label}
+                  </span>
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
 
           <TabsContent value="dashboard" className="mt-0 space-y-3"><OverviewCards data={data.overview} /></TabsContent>
@@ -369,21 +451,44 @@ export default function Home() {
 
       {/* ─── Bottom Nav ─── */}
       <nav className="fixed bottom-0 left-0 right-0 glass-nav z-50">
-        <div className="max-w-md mx-auto flex items-center justify-around pt-1.5 pb-safe">
-          {tabConfig.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => switchTab(tab.key)}
-              className={`flex flex-col items-center gap-[1px] py-1.5 px-4 transition-all duration-200 tap-feedback ${
-                activeTab === tab.key
-                  ? "text-[#D6001C]"
-                  : "text-[#48484a]"
-              }`}
-            >
-              <tab.icon className="h-[18px] w-[18px]" strokeWidth={activeTab === tab.key ? 1.8 : 1.2} />
-              <span className="text-[9px] font-medium tracking-[0.02em]">{tab.label}</span>
-            </button>
-          ))}
+        {/* Subtle top-edge highlight line */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[0.5px]"
+          style={{
+            background: "linear-gradient(90deg, transparent 5%, rgba(214, 0, 28, 0.15) 30%, rgba(255, 255, 255, 0.08) 50%, rgba(214, 0, 28, 0.15) 70%, transparent 95%)",
+          }}
+        />
+        <div className="max-w-md mx-auto flex items-center justify-around pt-2 pb-safe">
+          {tabConfig.map((tab) => {
+            const isActive = activeTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => switchTab(tab.key)}
+                className={`flex flex-col items-center gap-[2px] py-1 px-4 transition-all duration-300 tap-feedback relative ${
+                  isActive ? "text-[#D6001C]" : "text-[#48484a]"
+                }`}
+              >
+                {/* Red dot indicator above active icon */}
+                {isActive && (
+                  <span
+                    className="absolute -top-[3px] left-1/2 -translate-x-1/2 w-[4px] h-[4px] rounded-full"
+                    style={{
+                      background: "#D6001C",
+                      boxShadow: "0 0 6px rgba(214, 0, 28, 0.6), 0 0 12px rgba(214, 0, 28, 0.2)",
+                    }}
+                  />
+                )}
+                <tab.icon
+                  className={`transition-all duration-300 ${isActive ? "h-[19px] w-[19px]" : "h-[17px] w-[17px]"}`}
+                  strokeWidth={isActive ? 1.8 : 1.2}
+                />
+                <span className={`text-[9px] font-medium tracking-[0.02em] transition-all duration-300 ${isActive ? "opacity-100" : "opacity-50"}`}>
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </nav>
     </div>
