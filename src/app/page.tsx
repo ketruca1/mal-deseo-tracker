@@ -154,7 +154,7 @@ export default function Home() {
   }, []);
 
   // Notifications
-  const { notifications, unreadCount, isOpen: notifOpen, setIsOpen: setNotifOpen, markAllRead, markRead, dismiss, panelRef } = useNotifications(
+  const { notifications, unreadCount, isOpen: notifOpen, openPanel, closePanel, markAllRead, markRead, dismiss, panelRef } = useNotifications(
     data ? { content: data.content, kpis: data.kpis } : {}
   );
 
@@ -253,7 +253,7 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-1">
               <button
-                onClick={() => setNotifOpen(!notifOpen)}
+                onClick={notifOpen ? closePanel : openPanel}
                 className="w-10 h-10 flex items-center justify-center rounded-full text-[#6e6a7a] hover:text-white hover:bg-white/[0.04] transition-colors duration-200 relative"
               >
                 <Bell className="h-[18px] w-[18px]" strokeWidth={1.5} />
@@ -358,7 +358,7 @@ export default function Home() {
         notifications={notifications}
         unreadCount={unreadCount}
         isOpen={notifOpen}
-        onClose={() => setNotifOpen(false)}
+        onClose={closePanel}
         onMarkAllRead={markAllRead}
         onMarkRead={markRead}
         onDismiss={dismiss}
