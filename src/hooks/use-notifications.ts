@@ -198,7 +198,7 @@ export function useNotifications(data: {
     updateAppBadge(unreadCount);
   }, [unreadCount]);
 
-  // Load persisted state on mount
+  // Load persisted state on mount — clean stale daily notifications
   useEffect(() => {
     readIdsRef.current = getReadIds();
     dismissedIdsRef.current = getDismissedIds();
@@ -207,15 +207,34 @@ export function useNotifications(data: {
     // Restore notifications from localStorage
     const saved = loadNotificationsFromStorage();
     if (saved.length > 0) {
-      // Apply persisted read/dismissed state to restored notifications
+      const now = Date.now();
+      const ONE_DAY = 86400000;
+      const today = new Date().toISOString().slice(0, 10);
+
       const restored = saved
-        .filter(n => !dismissedIdsRef.current.has(n.id))
+        .filter(n => {
+          // Remove dismissed
+          if (dismissedIdsRef.current.has(n.id)) return false;
+          // Auto-remove daily notifications older than 24h
+          if (["motivational", "streak", "content", "commitment"].includes(n.type)) {
+            if (now - n.timestamp > ONE_DAY) return false;
+          }
+          return true;
+        })
         .map(n => ({
           ...n,
           read: n.read || readIdsRef.current.has(n.id),
         }));
       setNotifications(restored);
+      saveNotificationsToStorage(restored);
     }
+  }, []);
+
+  // Auto-mark all as read when panel opens
+  const openPanel = useCallback(() => {
+    setIsOpen(true);
+    // Small delay so the user sees the unread state briefly before it marks read
+    setTimeout(() => markAllRead(), 400);
   }, []);
 
   const generateContextualNotifications = useCallback(() => {
@@ -434,6 +453,27 @@ export function useNotifications(data: {
     });
   }, []);
 
+  // Periodic cleanup: remove daily notifications older than 24h
+  useEffect(() => {
+    const cleanup = setInterval(() => {
+      const now = Date.now();
+      const ONE_DAY = 86400000;
+      setNotifications(prev => {
+        const cleaned = prev.filter(n => {
+          if (["motivational", "streak", "content", "commitment"].includes(n.type)) {
+            if (now - n.timestamp > ONE_DAY) return false;
+          }
+          return true;
+        });
+        if (cleaned.length !== prev.length) {
+          saveNotificationsToStorage(cleaned);
+        }
+        return cleaned;
+      });
+    }, 300000); // every 5 min
+    return () => clearInterval(cleanup);
+  }, []);
+
   // Close panel on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -449,7 +489,7 @@ export function useNotifications(data: {
     notifications,
     unreadCount,
     isOpen,
-    setIsOpen,
+    setIsOpen: openPanel,
     markAllRead,
     markRead,
     dismiss,
